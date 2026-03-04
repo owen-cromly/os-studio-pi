@@ -2,4 +2,5 @@
 
 !*.c
 !.gitignore
+!*.ko
 *.mod.c
