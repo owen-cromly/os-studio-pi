@@ -1,0 +1,10 @@
+#!/bin/bash
+
+dmesg --clear
+numsec=$(bc -l <<< "5.5*( $2+$(bc -l <<<$3/1000000000) )")
+#echo $numsec
+#echo "insmod ${1}.ko log_sec=$2 log_nsec=$3"
+insmod "${1}.ko" log_sec=$2 log_nsec=$3
+sleep ${numsec}s
+dmesg
+rmmod ${1}
