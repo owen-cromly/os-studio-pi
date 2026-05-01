@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# place in ~/scripts/
+
+set -e
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <name>"
+    exit 1
+fi
+
+NAME="$1"
+
+REPOS_DIR="/home/ocrom04/repos"
+BARE_REPO="$REPOS_DIR/.$NAME.git"
+WORK_TREE="$REPOS_DIR/$NAME"
+
+mkdir -p "$REPOS_DIR"
+
+echo "Creating bare repo: $BARE_REPO"
+git init --bare "$BARE_REPO" > /dev/null
+
+mkdir -p "$WORK_TREE"
+
+# Create post-receive hook
+HOOK="$BARE_REPO/hooks/post-receive"
+
+cat > "$HOOK" <<EOF
+#!/usr/bin/env bash
+
+set -e
+
+GIT_DIR="\$(pwd)"
+
+WORK_TREE="$WORK_TREE"
+
+mkdir -p "\$WORK_TREE"
+
+git --work-tree="\$WORK_TREE" --git-dir="\$GIT_DIR" checkout -f
+
+EOF
+
+chmod +x "$HOOK"
+
+echo "Done."
